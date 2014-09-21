@@ -6,6 +6,7 @@ use Term::ReadKey;
 use utf8;
 use Jcode;
 use Text::CSV_XS;
+use Email::Date::Format qw(email_date);
 
 our $smtphost ;
 our $smtpport ;
@@ -59,6 +60,9 @@ my $csv = Text::CSV_XS->new({binary=>1});
 my @columnlist = @{$csv->getline($fh)};
 
 until($fh->eof){
+	if(!$send_real){
+		print "\n\n--------\n";
+	}
 	my @data = @{$csv->getline($fh)};
 	my $mailto = $data[0];
 
@@ -79,10 +83,16 @@ until($fh->eof){
 	my $subjectenc = Jcode->new($subject)->mime_encode;
 	my $bodyenc = Jcode->new($mybody)->jis;
 
+	if(!$send_real){
+		$subjectenc = $subject;
+		$bodyenc = $mybody;
+	}
+
 	my $message = '';
 	$message .= 'From: '. $mailfrom. "\n";
 	$message .= 'To: '. $mailto."\n";
 	$message .= 'Subject: '. $subjectenc."\n";
+	$message .= 'Date: '.email_date."\n";
 	$message .= "Mime-Version: 1.0\n";
 	$message .= "Content-Type: text/plain; charset=\"iso-2022-jp\"\n";
 	$message .= "Content-Transfer-Encoding: 7bit\n";
@@ -101,13 +111,14 @@ until($fh->eof){
 			$smtp->data();
 			$smtp->datasend($message);
 			$smtp->dataend();
-			print LOGFH "Send to ".$mailto."\n";
+			print LOGFH "Send \"".$subject."\"to ".$mailto."\n";
 			print "Sent.\n";
 		}else{
 			print $smtp->message();
 		}
 		$smtp->quit();
 	} else {
+		print "--\n";
 		print $message;
 	}
 }
