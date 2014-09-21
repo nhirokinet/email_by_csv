@@ -1,0 +1,5 @@
+setting.pl
+mailsetting.pl
+*.csv
+body.txt
+log/*.log

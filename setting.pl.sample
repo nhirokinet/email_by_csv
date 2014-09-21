@@ -1,0 +1,11 @@
+$smtphost = 'smtp.googlemail.com';
+$smtpport = 587;
+$smtpssl = 'starttls'; # 'starttls', 'ssl', undef
+$smtpehlo = 'localhost';
+$smtplogin = 'LOGIN';
+
+$smtpusername = '';
+$smtppasswd = '';
+
+$mailfrom='hogehoge@example.com';
+
