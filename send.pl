@@ -59,6 +59,15 @@ my $csv = Text::CSV_XS->new({binary=>1});
 
 my @columnlist = @{$csv->getline($fh)};
 
+my $smtp;
+if($send_real){
+	$smtp = Net::SMTPS->new($smtphost, Port=>$smtpport, User=>$smtpusername, Password=>$smtppasswd, doSSL=>$smtpssl, ehlo=>$smtpehlo);
+	if(!$smtp){
+		die 'SMTP Error';
+	}
+	$smtp->auth($smtpusername, $smtppasswd);
+}
+
 until($fh->eof){
 	if(!$send_real){
 		print "\n\n--------\n";
@@ -100,11 +109,6 @@ until($fh->eof){
 	$message .= $bodyenc;
 	
 	if($send_real){
-		my $smtp = Net::SMTPS->new($smtphost, Port=>$smtpport, User=>$smtpusername, Password=>$smtppasswd, doSSL=>$smtpssl, ehlo=>$smtpehlo);
-		if(!$smtp){
-			die 'SMTP Error';
-		}
-		$smtp->auth($smtpusername, $smtppasswd);
 
 		$smtp->mail($mailfrom);
 		if($smtp->to($mailto)){
@@ -116,11 +120,11 @@ until($fh->eof){
 		}else{
 			print $smtp->message();
 		}
-		$smtp->quit();
 	} else {
 		print "--\n";
 		print $message;
 	}
 }
+$smtp->quit();
 $fh->close;
 close(LOGFH);

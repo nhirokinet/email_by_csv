@@ -1,6 +1,6 @@
-$smtphost = 'smtp.googlemail.com';
-$smtpport = 587;
-$smtpssl = 'starttls'; # 'starttls', 'ssl', undef
+$smtphost = 'smtp.googlemail.com'; # sample for gmail
+$smtpport = 465;
+$smtpssl = 'ssl'; # 'starttls', 'ssl', undef
 $smtpehlo = 'localhost';
 $smtplogin = 'LOGIN';
 
